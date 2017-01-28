@@ -70,7 +70,6 @@ function getMe()
 end
 
 function getUpdates(offset)
-    print('start getting updates' .. math.random())
     local url = BASE_URL .. '/getUpdates?timeout=20'
     if offset then
         url = url .. '&offset=' .. offset
@@ -159,19 +158,16 @@ function sendMessage(chat_id, text, use_markdown, reply_to_message_id, send_soun
 end
 
 function forwardMessage(chat_id, from_chat_id, message_id)
-    local obj_from = getChat(from_chat_id)
-    local obj_to = getChat(chat_id)
+    local obj_from = getChat(from_chat_id, true)
+    local obj_to = getChat(chat_id, true)
     if type(obj_from) == 'table' and type(obj_to) == 'table' then
-        if obj_from.result and obj_to.result then
-            local url = BASE_URL ..
-            '/forwardMessage?chat_id=' .. chat_id ..
-            '&from_chat_id=' .. from_chat_id ..
-            '&message_id=' .. message_id
-            obj_to = obj_to.result
-            local sent_msg = { from = bot, chat = obj_to, text = text, forward = true }
-            print_msg(sent_msg)
-            return sendRequest(url)
-        end
+        local url = BASE_URL ..
+        '/forwardMessage?chat_id=' .. chat_id ..
+        '&from_chat_id=' .. from_chat_id ..
+        '&message_id=' .. message_id
+        local sent_msg = { from = bot, chat = obj_to, text = text, forward = true }
+        print_msg(sent_msg)
+        return sendRequest(url)
     end
 end
 
