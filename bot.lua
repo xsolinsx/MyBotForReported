@@ -130,6 +130,7 @@ function bot_init()
             user = obj
         end
     end
+    last_update = last_update or 0
     is_started = true
     -- whether the bot should be running or not.
 end
