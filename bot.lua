@@ -298,94 +298,117 @@ function check_flood(msg)
     return false
 end
 
+-- Returns a table with matches or nil
+function match_pattern(pattern, text, lower_case)
+    if text then
+        local matches = { }
+        if lower_case then
+            matches = { string.match(text:lower(), pattern) }
+        else
+            matches = { string.match(text, pattern) }
+        end
+        if next(matches) then
+            return matches
+        end
+    end
+    -- nil
+end
+
 function check_command(msg)
-    if string.match(msg.text, "^[#!/][Bb][Ll][Oo][Cc][Kk] (.*)?") then
-        local more = string.match(msg.text, "^[#!/][Bb][Ll][Oo][Cc][Kk] (.*)?")
-        if msg.reply then
-            if more then
-                if more:lower() == 'from' then
-                    if msg.reply_to_message.forward then
-                        if msg.reply_to_message.forward_from then
-                            sendMessage(user.id, blockUser(msg.reply_to_message.forward_from.id))
-                            return true
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    if matches then
+        if matches[1]:lower() == 'block' then
+            if msg.reply then
+                if matches[2] then
+                    if matches[2]:lower() == 'from' then
+                        if msg.reply_to_message.forward then
+                            if msg.reply_to_message.forward_from then
+                                sendMessage(user.id, blockUser(msg.reply_to_message.forward_from.id))
+                                return true
+                            else
+                                sendMessage(user.id, 'Can\'t do this to chat.')
+                                return true
+                            end
                         else
-                            sendMessage(user.id, 'Can\'t do this to chat.')
+                            sendMessage(user.id, 'No forward found.')
                             return true
                         end
                     else
-                        sendMessage(user.id, 'No forward found.')
+                        sendMessage(user.id, blockUser(msg.reply_to_message.from.id))
                         return true
                     end
                 else
                     sendMessage(user.id, blockUser(msg.reply_to_message.from.id))
                     return true
                 end
-            else
-                sendMessage(user.id, blockUser(msg.reply_to_message.from.id))
-                return true
-            end
-        elseif more then
-            if string.match(more, '^%d+$') then
-                sendMessage(user.id, blockUser(more))
-                return true
-            elseif string.match(more, '^[^%s]+$') then
-                local obj_user = getChat('@' .. more:gsub('@', ''))
-                if obj_user then
-                    if obj_user.type == 'private' then
-                        sendMessage(user.id, blockUser(obj_user.id))
-                        return true
+            elseif matches[2] then
+                if string.match(matches[2], '^%d+$') then
+                    sendMessage(user.id, blockUser(matches[2]))
+                    return true
+                elseif string.match(matches[2], '^[^%s]+$') then
+                    local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
+                    if obj_user then
+                        if obj_user.type == 'private' then
+                            sendMessage(user.id, blockUser(obj_user.id))
+                            return true
+                        end
                     end
                 end
             end
         end
         return false
     end
-    if string.match(msg.text, "^[#!/][Uu][Nn][Bb][Ll][Oo][Cc][Kk] (.*)?") then
-        local more = string.match(msg.text, "^[#!/][Uu][Nn][Bb][Ll][Oo][Cc][Kk] (.*)?")
-        if msg.reply then
-            if more then
-                if more:lower() == 'from' then
-                    if msg.reply_to_message.forward then
-                        if msg.reply_to_message.forward_from then
-                            sendMessage(user.id, unblockUser(msg.reply_to_message.forward_from.id))
-                            return true
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    if matches then
+        if matches[1]:lower() == 'unblock' then
+            if msg.reply then
+                if matches[2] then
+                    if matches[2]:lower() == 'from' then
+                        if msg.reply_to_message.forward then
+                            if msg.reply_to_message.forward_from then
+                                sendMessage(user.id, unblockUser(msg.reply_to_message.forward_from.id))
+                                return true
+                            else
+                                sendMessage(user.id, 'Can\'t do this to chat.')
+                                return true
+                            end
                         else
-                            sendMessage(user.id, 'Can\'t do this to chat.')
+                            sendMessage(user.id, 'No forward found.')
                             return true
                         end
                     else
-                        sendMessage(user.id, 'No forward found.')
+                        sendMessage(user.id, unblockUser(msg.reply_to_message.from.id))
                         return true
                     end
                 else
                     sendMessage(user.id, unblockUser(msg.reply_to_message.from.id))
                     return true
                 end
-            else
-                sendMessage(user.id, unblockUser(msg.reply_to_message.from.id))
-                return true
-            end
-        elseif more then
-            if string.match(more, '^%d+$') then
-                sendMessage(user.id, unblockUser(more))
-                return true
-            elseif string.match(more, '^[^%s]+$') then
-                local obj_user = getChat('@' .. more:gsub('@', ''))
-                if obj_user then
-                    if obj_user.type == 'private' then
-                        sendMessage(user.id, unblockUser(obj_user.id))
-                        return true
+            elseif matches[2] then
+                if string.match(matches[2], '^%d+$') then
+                    sendMessage(user.id, unblockUser(matches[2]))
+                    return true
+                elseif string.match(matches[2], '^[^%s]+$') then
+                    local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
+                    if obj_user then
+                        if obj_user.type == 'private' then
+                            sendMessage(user.id, unblockUser(obj_user.id))
+                            return true
+                        end
                     end
                 end
             end
         end
         return false
     end
-    if string.match(msg.text, "^[#!/]([Pp][Mm]) (%d+) (.*)") then
-        local chat_id, text = string.match(msg.text, "^[#!/]([Pp][Mm]) (%d+) (.*)")
-        sendMessage(chat_id, text)
-        sendMessage(user.id, 'Text sent.')
-        return true
+    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
+    if matches then
+        if matches[1]:lower() == 'pm' then
+            sendMessage(matches[2], matches[3])
+            sendMessage(user.id, 'Text sent.')
+            return true
+        end
+        return false
     end
 end
 
