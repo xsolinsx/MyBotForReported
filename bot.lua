@@ -132,6 +132,7 @@ function bot_init()
     end
     last_update = last_update or 0
     is_started = true
+    print('\n' .. clr.green .. 'BOT RUNNING:\n@' .. bot.username .. '\n' .. bot.first_name .. '\n' .. bot.id .. clr.reset)
     -- whether the bot should be running or not.
 end
 
@@ -285,7 +286,6 @@ function check_flood(msg)
         local hash = 'reportedbot:user:' .. msg.from.id .. ':msgs'
         local msgs = tonumber(redis:get(hash) or 0)
         local max_msg = 10
-        print(msgs)
         if msgs >= max_msg then
             -- Block user if spammed in private
             blockUser(msg.from.id)
@@ -316,6 +316,7 @@ end
 
 function check_command(msg)
     local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    print(matches[1], matches[2])
     if matches then
         if matches[1]:lower() == 'block' then
             if msg.reply then
@@ -359,6 +360,7 @@ function check_command(msg)
         return false
     end
     local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    print(matches[1], matches[2])
     if matches then
         if matches[1]:lower() == 'unblock' then
             if msg.reply then
@@ -385,6 +387,7 @@ function check_command(msg)
                     return true
                 end
             elseif matches[2] then
+                print(string.match(matches[2], '^%d+$'))
                 if string.match(matches[2], '^%d+$') then
                     sendMessage(user.id, unblockUser(matches[2]))
                     return true
@@ -402,6 +405,7 @@ function check_command(msg)
         return false
     end
     local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
+    print(matches[1], matches[2])
     if matches then
         if matches[1]:lower() == 'pm' then
             sendMessage(matches[2], matches[3])
