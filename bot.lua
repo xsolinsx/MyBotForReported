@@ -316,8 +316,8 @@ end
 
 function check_command(msg)
     local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
-    print(matches[1], matches[2])
     if matches then
+        print(matches[1], matches[2])
         if matches[1]:lower() == 'block' then
             if msg.reply then
                 if matches[2] then
@@ -360,8 +360,8 @@ function check_command(msg)
         return false
     end
     local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
-    print(matches[1], matches[2])
     if matches then
+        print(matches[1], matches[2])
         if matches[1]:lower() == 'unblock' then
             if msg.reply then
                 if matches[2] then
@@ -405,8 +405,8 @@ function check_command(msg)
         return false
     end
     local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
-    print(matches[1], matches[2])
     if matches then
+        print(matches[1], matches[2])
         if matches[1]:lower() == 'pm' then
             sendMessage(matches[2], matches[3])
             sendMessage(user.id, 'Text sent.')
