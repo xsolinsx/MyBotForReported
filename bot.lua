@@ -404,9 +404,13 @@ function on_msg_receive(msg)
         if tonumber(msg.from.id) == tonumber(user.id) then
             if not check_command(msg) then
                 if msg.reply_to_message then
-                    forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                    if msg.reply_to_message.forward_from then
+                        forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                    else
+                        sendMessage(user.id, 'Need forward.')
+                    end
                 else
-                    sendMessage(user.id, 'Need a reply.')
+                    sendMessage(user.id, 'Need reply.')
                 end
             end
         else
