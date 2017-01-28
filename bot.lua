@@ -289,8 +289,8 @@ function check_flood(msg)
         if msgs >= max_msg then
             -- Block user if spammed in private
             blockUser(msg.from.id)
-            sendMessage(msg.from.id, "User " .. msg.from.id .. " blocked for spam.")
-            sendMessage(user.id, "User " .. msg.from.id .. " blocked for spam.\nPress /unblock" .. msg.from.id .. "to unblock.")
+            sendMessage(msg.from.id, 'User ' .. msg.from.id .. ' blocked for spam.\n\n\n\n\n\nIt\'s you shitty asshole.\nBye Bye')
+            sendMessage(user.id, 'User ' .. msg.from.id .. ' blocked for spam.\nPress /unblock' .. msg.from.id .. ' to unblock.')
             return true
         end
         redis:setex(hash, TIME_CHECK, msgs + 1)
