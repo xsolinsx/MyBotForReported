@@ -290,7 +290,7 @@ function check_flood(msg)
             -- Block user if spammed in private
             blockUser(msg.from.id)
             sendMessage(msg.from.id, "User " .. msg.from.id .. " blocked for spam.")
-            sendMessage(user.id, "User " .. msg.from.id .. " blocked for spam.")
+            sendMessage(user.id, "User " .. msg.from.id .. " blocked for spam.\nPress /unblock" .. msg.from.id .. "to unblock.")
             return true
         end
         redis:setex(hash, TIME_CHECK, msgs + 1)
@@ -315,7 +315,8 @@ function match_pattern(pattern, text, lower_case)
 end
 
 function check_command(msg)
-    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)?", msg.text)
+    printvardump(matches)
     if matches then
         print(matches[1], matches[2])
         if matches[1]:lower() == 'block' then
@@ -359,7 +360,8 @@ function check_command(msg)
         end
         return false
     end
-    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk]) (.*)?", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)?", msg.text)
+    printvardump(matches)
     if matches then
         print(matches[1], matches[2])
         if matches[1]:lower() == 'unblock' then
@@ -405,6 +407,7 @@ function check_command(msg)
         return false
     end
     local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
+    printvardump(matches)
     if matches then
         print(matches[1], matches[2])
         if matches[1]:lower() == 'pm' then
@@ -429,7 +432,9 @@ function on_msg_receive(msg)
     msg = adjust_msg(msg)
     if msg_valid(msg) then
         if tonumber(msg.from.id) == tonumber(user.id) then
-            if not check_command(msg) then
+            local command = check_command(msg)
+            print(command)
+            if not command then
                 if msg.reply_to_message then
                     if msg.reply_to_message.forward_from then
                         forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
