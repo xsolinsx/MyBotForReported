@@ -315,7 +315,7 @@ function match_pattern(pattern, text, lower_case)
 end
 
 function check_command(msg)
-    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)?", msg.text)
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
     printvardump(matches)
     if matches then
         print(matches[1], matches[2])
@@ -360,7 +360,7 @@ function check_command(msg)
         end
         return false
     end
-    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)?", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
     printvardump(matches)
     if matches then
         print(matches[1], matches[2])
