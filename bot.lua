@@ -315,108 +315,120 @@ function match_pattern(pattern, text, lower_case)
 end
 
 function check_command(msg)
+    local found = false
     local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
-    printvardump(matches)
     if matches then
-        print(matches[1], matches[2])
         if matches[1]:lower() == 'block' then
+            found = true
+            local success = false
+            local this_user = 0
             if msg.reply then
                 if matches[2] then
                     if matches[2]:lower() == 'from' then
                         if msg.reply_to_message.forward then
                             if msg.reply_to_message.forward_from then
-                                sendMessage(user.id, blockUser(msg.reply_to_message.forward_from.id))
-                                return true
+                                blockUser(msg.reply_to_message.forward_from.id)
+                                this_user = msg.reply_to_message.forward_from.id
+                                success = true
                             else
                                 sendMessage(user.id, 'Can\'t do this to chat.')
-                                return true
                             end
                         else
                             sendMessage(user.id, 'No forward found.')
-                            return true
                         end
                     else
-                        sendMessage(user.id, blockUser(msg.reply_to_message.from.id))
-                        return true
+                        blockUser(msg.reply_to_message.from.id)
+                        this_user = msg.reply_to_message.from.id
+                        success = true
                     end
                 else
-                    sendMessage(user.id, blockUser(msg.reply_to_message.from.id))
-                    return true
+                    blockUser(msg.reply_to_message.from.id)
+                    this_user = msg.reply_to_message.from.id
+                    success = true
                 end
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
-                    sendMessage(user.id, blockUser(matches[2]))
-                    return true
+                    blockUser(matches[2])
+                    this_user = matches[2]
+                    success = true
                 elseif string.match(matches[2], '^[^%s]+$') then
                     local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
                     if obj_user then
-                        if obj_user.type == 'private' then
-                            sendMessage(user.id, blockUser(obj_user.id))
-                            return true
+                        if obj_user.type == 'private' or obj_user.type == 'user' then
+                            blockUser(obj_user.id)
+                            this_user = obj_user.id
+                            success = true
                         end
                     end
                 end
             end
+            if success then
+                sendMessage(user.id, 'User ' .. this_user .. ' blocked.')
+                sendMessage(this_user, 'Blocked.')
+            end
         end
-        return false
     end
     local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
-    printvardump(matches)
     if matches then
-        print(matches[1], matches[2])
         if matches[1]:lower() == 'unblock' then
+            found = true
+            local success = false
+            local this_user = 0
             if msg.reply then
                 if matches[2] then
                     if matches[2]:lower() == 'from' then
                         if msg.reply_to_message.forward then
                             if msg.reply_to_message.forward_from then
-                                sendMessage(user.id, unblockUser(msg.reply_to_message.forward_from.id))
-                                return true
+                                unblockUser(msg.reply_to_message.forward_from.id)
+                                this_user = msg.reply_to_message.forward_from.id
+                                success = true
                             else
                                 sendMessage(user.id, 'Can\'t do this to chat.')
-                                return true
                             end
                         else
                             sendMessage(user.id, 'No forward found.')
-                            return true
                         end
                     else
-                        sendMessage(user.id, unblockUser(msg.reply_to_message.from.id))
-                        return true
+                        unblockUser(msg.reply_to_message.from.id)
+                        this_user = msg.reply_to_message.from.id
+                        success = true
                     end
                 else
-                    sendMessage(user.id, unblockUser(msg.reply_to_message.from.id))
-                    return true
+                    unblockUser(msg.reply_to_message.from.id)
+                    this_user = msg.reply_to_message.from.id
+                    success = true
                 end
             elseif matches[2] then
-                print(string.match(matches[2], '^%d+$'))
                 if string.match(matches[2], '^%d+$') then
-                    sendMessage(user.id, unblockUser(matches[2]))
-                    return true
+                    unblockUser(matches[2])
+                    this_user = matches[2]
+                    success = true
                 elseif string.match(matches[2], '^[^%s]+$') then
                     local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
                     if obj_user then
-                        if obj_user.type == 'private' then
-                            sendMessage(user.id, unblockUser(obj_user.id))
-                            return true
+                        if obj_user.type == 'private' or obj_user.type == 'user' then
+                            unblockUser(obj_user.id)
+                            this_user = obj_user.id
+                            success = true
                         end
                     end
                 end
             end
+            if success then
+                sendMessage(user.id, 'User ' .. this_user .. ' unblocked.')
+                sendMessage(this_user, 'Unblocked.')
+            end
         end
-        return false
     end
     local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
-    printvardump(matches)
     if matches then
-        print(matches[1], matches[2])
         if matches[1]:lower() == 'pm' then
+            found = true
             sendMessage(matches[2], matches[3])
             sendMessage(user.id, 'Text sent.')
-            return true
         end
-        return false
     end
+    return found
 end
 
 -- This function is called when tg receive a msg
