@@ -31,7 +31,6 @@ clr = require "term.colors"
 user = { }
 bot = { }
 master_id = 41400331
-bot_api_key = ''
 api_errors = {
     [101] = 'Not enough rights to kick participant',
     -- SUPERGROUP: bot is not admin
@@ -109,6 +108,12 @@ api_errors = {
 function bot_init()
     bot = nil
     user = nil
+    local file = io.open('bot_api_key.txt', "r")
+    if file then
+        -- read all contents of file into a string
+        bot_api_key = file:read()
+        file:close()
+    end
     if bot_api_key == '' then
         print(clr.red .. 'API KEY MISSING!' .. clr.reset)
         return
