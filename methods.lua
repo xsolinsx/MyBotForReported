@@ -43,16 +43,12 @@ function sendRequest(url)
     end
 
     if code ~= 200 then
-
         if code == 400 then
             -- error code 400 is general: try to specify
             code = getCode(tab.description)
         end
-
         print(clr.red .. code, tab.description .. clr.reset)
-        if code ~= 403 and code ~= 429 and code ~= 110 and code ~= 111 then
-            sendMessage(user.id, '#BadRequest\n' .. vardumptext(tab) .. '\n' .. code)
-        end
+        sendMessage(user.id, '#BadRequest\n' .. vardumptext(tab) .. '\n' .. code)
         return false, code, tab.description
     end
 
