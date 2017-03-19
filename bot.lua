@@ -451,6 +451,13 @@ function check_command(msg)
             sendMessage(user.id, 'Text sent.')
         end
     end
+    local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])", msg.text)
+    if matches then
+        if matches[1]:lower() == "update" then
+            found = true
+            sendMessage(user.id, io.popen('git pull'):read('*all'))
+        end
+    end
     return found
 end
 
