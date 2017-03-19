@@ -171,6 +171,24 @@ function adjust_msg(msg)
     return msg
 end
 
+local function pre_process_reply(msg)
+    if msg.reply_to_message then
+        msg.reply = true
+    end
+    return msg
+end
+
+-- recursive to simplify code
+local function pre_process_forward(msg)
+    if msg.forward_from or msg.forward_from_chat then
+        msg.forward = true
+    end
+    if msg.reply then
+        msg.reply_to_message = pre_process_forward(msg.reply_to_message)
+    end
+    return msg
+end
+
 -- recursive to simplify code
 function pre_process_media_msg(msg)
     msg.media = false
@@ -445,6 +463,8 @@ function on_msg_receive(msg)
         sendMessage(user.id, 'Loop without message', true)
         return
     end
+    msg = pre_process_forward(msg)
+    msg = pre_process_reply(msg)
     msg = pre_process_media_msg(msg)
     msg = adjust_msg(msg)
     if msg_valid(msg) then
@@ -453,8 +473,12 @@ function on_msg_receive(msg)
             print(command)
             if not command then
                 if msg.reply_to_message then
-                    if msg.reply_to_message.forward_from then
-                        forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                    if msg.reply_to_message.forward then
+                        if msg.reply_to_message.forward_from then
+                            forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                        else
+                            sendMessage(user.id, 'Need forward.')
+                        end
                     else
                         sendMessage(user.id, 'Need forward.')
                     end
@@ -465,6 +489,22 @@ function on_msg_receive(msg)
         else
             if not check_flood(msg) then
                 forwardMessage(user.id, msg.from.id, msg.message_id)
+                if msg.forward then
+                    if msg.forward_from then
+                        if msg.forward_from.id ~= msg.from.id then
+                            sendMessage(user.id, '? FWD USER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ?')
+                        end
+                    elseif msg.forward_from_chat then
+                        if msg.forward_from_chat.id ~= msg.from.id then
+                            sendMessage(user.id, '? FWD CHAT ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ?')
+                        end
+                    end
+                end
+                if msg.media then
+                    if msg.media_type == 'sticker' then
+                        sendMessage(user.id, '? STICKER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ?')
+                    end
+                end
             else
                 -- flooder
             end
