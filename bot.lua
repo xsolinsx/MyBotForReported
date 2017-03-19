@@ -489,6 +489,11 @@ function on_msg_receive(msg)
         else
             if not check_flood(msg) then
                 forwardMessage(user.id, msg.from.id, msg.message_id)
+                if msg.media then
+                    if msg.media_type == 'sticker' then
+                        sendMessage(user.id, '↑ STICKER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
+                    end
+                end
                 if msg.forward then
                     if msg.forward_from then
                         if msg.forward_from.id ~= msg.from.id then
@@ -498,11 +503,6 @@ function on_msg_receive(msg)
                         if msg.forward_from_chat.id ~= msg.from.id then
                             sendMessage(user.id, '↑ FWD CHAT ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
                         end
-                    end
-                end
-                if msg.media then
-                    if msg.media_type == 'sticker' then
-                        sendMessage(user.id, '↑ STICKER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
                     end
                 end
             else
