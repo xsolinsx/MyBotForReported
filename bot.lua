@@ -480,12 +480,8 @@ function on_msg_receive(msg)
             print(command)
             if not command then
                 if msg.reply_to_message then
-                    if msg.reply_to_message.forward then
-                        if msg.reply_to_message.forward_from then
-                            forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
-                        else
-                            sendMessage(user.id, 'Need forward.')
-                        end
+                    if msg.reply_to_message.forward_from then
+                        forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
                     else
                         sendMessage(user.id, 'Need forward.')
                     end
