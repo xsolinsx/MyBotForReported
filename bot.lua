@@ -470,6 +470,10 @@ function on_msg_receive(msg)
         sendMessage(user.id, 'Loop without message', true)
         return
     end
+    if msg.chat.type == 'group' or msg.chat.type == 'supergroup' then
+        -- not private message
+        return
+    end
     msg = pre_process_forward(msg)
     msg = pre_process_reply(msg)
     msg = pre_process_media_msg(msg)
