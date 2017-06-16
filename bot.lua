@@ -338,7 +338,7 @@ function match_pattern(pattern, text, lower_case)
 end
 
 function check_command(msg)
-    vardump(msg)
+    printvardump(msg)
     local found = false
     local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
