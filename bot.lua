@@ -339,7 +339,7 @@ end
 
 function check_command(msg)
     local found = false
-    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)$", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])$", msg.text)
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
         if matches[1]:lower() == 'block' then
             found = true
@@ -348,8 +348,8 @@ function check_command(msg)
             if msg.reply then
                 if msg.reply_to_message.forward then
                     if msg.reply_to_message.forward_from then
-                        blockUser(msg.reply_to_message.forward_from.id)
                         this_user = msg.reply_to_message.forward_from.id
+                        blockUser(this_user)
                         success = true
                     else
                         sendMessage(user.id, 'Can\'t do this to chat.')
@@ -359,15 +359,15 @@ function check_command(msg)
                 end
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
-                    blockUser(matches[2])
                     this_user = matches[2]
+                    blockUser(this_user)
                     success = true
                 elseif string.match(matches[2], '^[^%s]+$') then
                     local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
                     if obj_user then
                         if obj_user.type == 'private' or obj_user.type == 'user' then
-                            blockUser(obj_user.id)
                             this_user = obj_user.id
+                            blockUser(this_user)
                             success = true
                         end
                     end
@@ -379,7 +379,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)$", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])$", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
         if matches[1]:lower() == 'unblock' then
             found = true
@@ -388,8 +388,8 @@ function check_command(msg)
             if msg.reply then
                 if msg.reply_to_message.forward then
                     if msg.reply_to_message.forward_from then
-                        unblockUser(msg.reply_to_message.forward_from.id)
                         this_user = msg.reply_to_message.forward_from.id
+                        unblockUser(this_user)
                         success = true
                     else
                         sendMessage(user.id, 'Can\'t do this to chat.')
@@ -399,15 +399,15 @@ function check_command(msg)
                 end
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
-                    unblockUser(matches[2])
                     this_user = matches[2]
+                    unblockUser(this_user)
                     success = true
                 elseif string.match(matches[2], '^[^%s]+$') then
                     local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
                     if obj_user then
                         if obj_user.type == 'private' or obj_user.type == 'user' then
-                            unblockUser(obj_user.id)
                             this_user = obj_user.id
+                            unblockUser(this_user)
                             success = true
                         end
                     end
@@ -419,7 +419,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])(.*)$", msg.text) or match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])$", msg.text)
+    local matches = match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])(.*)", msg.text) or match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])", msg.text)
     if matches then
         if matches[1]:lower() == 'testuser' then
             found = true
@@ -429,7 +429,7 @@ function check_command(msg)
                 if msg.reply_to_message.forward then
                     if msg.reply_to_message.forward_from then
                         this_user = msg.reply_to_message.forward_from.id
-                        if sendChatAction(msg.reply_to_message.forward_from.id, 'typing') then
+                        if sendChatAction(this_user, 'typing') then
                             success = true
                         else
                             success = false
@@ -443,7 +443,7 @@ function check_command(msg)
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
                     this_user = matches[2]
-                    if sendChatAction(matches[2], 'typing') then
+                    if sendChatAction(this_user, 'typing') then
                         success = true
                     else
                         success = false
@@ -453,7 +453,7 @@ function check_command(msg)
                     if obj_user then
                         if obj_user.type == 'private' or obj_user.type == 'user' then
                             this_user = obj_user.id
-                            if sendChatAction(obj_user.id, 'typing') then
+                            if sendChatAction(this_user, 'typing') then
                                 success = true
                             else
                                 success = false
@@ -469,7 +469,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)$", msg.text)
+    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
     if matches then
         if matches[1]:lower() == 'pm' then
             found = true
@@ -477,14 +477,14 @@ function check_command(msg)
             sendMessage(user.id, 'Text sent.')
         end
     end
-    local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])$", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])", msg.text)
     if matches then
         if matches[1]:lower() == "update" then
             found = true
             sendMessage(user.id, io.popen('git pull'):read('*all'))
         end
     end
-    local matches = match_pattern("^[#!/]([Hh][Ee][Ll][Pp])$", msg.text)
+    local matches = match_pattern("^[#!/]([Hh][Ee][Ll][Pp])", msg.text)
     if matches then
         if matches[1]:lower() == "help" then
             found = true
@@ -525,6 +525,7 @@ function on_msg_receive(msg)
                 if msg.reply_to_message then
                     if msg.reply_to_message.forward_from then
                         forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                        sendChatAction(msg.from.id, 'typing')
                     else
                         sendMessage(user.id, 'Need forward.')
                     end
