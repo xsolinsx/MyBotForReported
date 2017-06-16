@@ -340,7 +340,7 @@ end
 function check_command(msg)
     printvardump(msg)
     local found = false
-    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) ?(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
         if matches[1]:lower() == 'block' then
             found = true
@@ -380,7 +380,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk]) ?(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
         if matches[1]:lower() == 'unblock' then
             found = true
@@ -420,7 +420,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])(.*)", msg.text) or match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])", msg.text)
+    local matches = match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr]) ?(.*)", msg.text) or match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])", msg.text)
     if matches then
         if matches[1]:lower() == 'testuser' then
             found = true
@@ -470,7 +470,7 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
+    local matches = match_pattern("^[#!/]([Pp][Mm]) ?(%d+) (.*)", msg.text)
     if matches then
         if matches[1]:lower() == 'pm' then
             found = true
@@ -489,12 +489,16 @@ function check_command(msg)
     if matches then
         if matches[1]:lower() == "help" then
             found = true
-            local help_text = '/help: The bot shows this help.\n' ..
+            local help_text = 'Every \'/\' can be replaced with \'#\' or \'!\'.\n' ..
+            'All commands are Case Insensitive.\n' ..
+            'Square brackets means that is an optional.\n' ..
+            'Round brackets indicate a choice with \'|\' that means "or".\n\n' ..
+            '/help: The bot shows this help.\n' ..
             '/update: The bot updates itself from github.\n' ..
-            '/pm <chat_id> <text>: The bot writes <text> to <chat_id>.\n' ..
-            '/testuser <id>|<username>|<reply_from>: The bot tests whether it has been blocked by the specified user or not.\n' ..
-            '/block <id>|<username>|<reply_from>: The bot "blocks" the specified user (you won\'t receive messages anymore from that user).\n' ..
-            '/unblock <id>|<username>|<reply_from>: The bot "unblocks" the specified user.'
+            '/pm[ ]<chat_id> <text>: The bot writes <text> to <chat_id>.\n' ..
+            '/testuser[ ]<id>|<username>|<reply_from>: The bot tests whether it has been blocked by the specified user or not.\n' ..
+            '/block[ ]<id>|<username>|<reply_from>: The bot "blocks" the specified user (you won\'t receive messages anymore from that user).\n' ..
+            '/unblock[ ]<id>|<username>|<reply_from>: The bot "unblocks" the specified user.\n' ..
             sendMessage(user.id, help_text)
         end
     end
