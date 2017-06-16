@@ -345,11 +345,11 @@ function check_command(msg)
         if matches[1]:lower() == 'block' then
             found = true
             local success = false
-            local this_user = 0
+            local this_user = nil
             if msg.reply then
                 if msg.reply_to_message.forward then
                     if msg.reply_to_message.forward_from then
-                        this_user = msg.reply_to_message.forward_from.id
+                        this_user = tonumber(msg.reply_to_message.forward_from.id)
                         blockUser(this_user)
                         success = true
                     else
@@ -514,8 +514,8 @@ function on_msg_receive(msg)
         -- not private message
         return
     end
-    msg = pre_process_forward(msg)
     msg = pre_process_reply(msg)
+    msg = pre_process_forward(msg)
     msg = pre_process_media_msg(msg)
     msg = adjust_msg(msg)
     if msg_valid(msg) then
