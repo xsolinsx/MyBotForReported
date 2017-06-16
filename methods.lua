@@ -191,6 +191,14 @@ function editMessageText(chat_id, message_id, text, keyboard, markdown)
     return res, code
     -- return false, and the code
 end
+
+function sendChatAction(chat_id, action)
+    -- Support actions are typing, upload_photo, record_video, upload_video, record_audio, upload_audio, upload_document, find_location, record_videonote, upload_videonote
+    local url = BASE_URL ..
+    '/sendChatAction?chat_id=' .. chat_id ..
+    '&action=' .. action
+    return sendRequest(url)
+end
 -- *** END API FUNCTIONS ***
 
 -- *** START PWRTELEGRAM API FUNCTIONS ***

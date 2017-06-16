@@ -339,35 +339,23 @@ end
 
 function check_command(msg)
     local found = false
-    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
+    local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])(.*)$", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])$", msg.text)
     if matches then
         if matches[1]:lower() == 'block' then
             found = true
             local success = false
             local this_user = 0
             if msg.reply then
-                if matches[2] then
-                    if matches[2]:lower() == 'from' then
-                        if msg.reply_to_message.forward then
-                            if msg.reply_to_message.forward_from then
-                                blockUser(msg.reply_to_message.forward_from.id)
-                                this_user = msg.reply_to_message.forward_from.id
-                                success = true
-                            else
-                                sendMessage(user.id, 'Can\'t do this to chat.')
-                            end
-                        else
-                            sendMessage(user.id, 'No forward found.')
-                        end
-                    else
-                        blockUser(msg.reply_to_message.from.id)
-                        this_user = msg.reply_to_message.from.id
+                if msg.reply_to_message.forward then
+                    if msg.reply_to_message.forward_from then
+                        blockUser(msg.reply_to_message.forward_from.id)
+                        this_user = msg.reply_to_message.forward_from.id
                         success = true
+                    else
+                        sendMessage(user.id, 'Can\'t do this to chat.')
                     end
                 else
-                    blockUser(msg.reply_to_message.from.id)
-                    this_user = msg.reply_to_message.from.id
-                    success = true
+                    sendMessage(user.id, 'No forward found.')
                 end
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
@@ -391,35 +379,23 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])(.*)$", msg.text) or match_pattern("^[#!/]([Uu][Nn][Bb][Ll][Oo][Cc][Kk])$", msg.text)
     if matches then
         if matches[1]:lower() == 'unblock' then
             found = true
             local success = false
             local this_user = 0
             if msg.reply then
-                if matches[2] then
-                    if matches[2]:lower() == 'from' then
-                        if msg.reply_to_message.forward then
-                            if msg.reply_to_message.forward_from then
-                                unblockUser(msg.reply_to_message.forward_from.id)
-                                this_user = msg.reply_to_message.forward_from.id
-                                success = true
-                            else
-                                sendMessage(user.id, 'Can\'t do this to chat.')
-                            end
-                        else
-                            sendMessage(user.id, 'No forward found.')
-                        end
-                    else
-                        unblockUser(msg.reply_to_message.from.id)
-                        this_user = msg.reply_to_message.from.id
+                if msg.reply_to_message.forward then
+                    if msg.reply_to_message.forward_from then
+                        unblockUser(msg.reply_to_message.forward_from.id)
+                        this_user = msg.reply_to_message.forward_from.id
                         success = true
+                    else
+                        sendMessage(user.id, 'Can\'t do this to chat.')
                     end
                 else
-                    unblockUser(msg.reply_to_message.from.id)
-                    this_user = msg.reply_to_message.from.id
-                    success = true
+                    sendMessage(user.id, 'No forward found.')
                 end
             elseif matches[2] then
                 if string.match(matches[2], '^%d+$') then
@@ -443,7 +419,57 @@ function check_command(msg)
             end
         end
     end
-    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)", msg.text)
+    local matches = match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])(.*)$", msg.text) or match_pattern("^[#!/]([Tt][Ee][Ss][Tt][Uu][Ss][Ee][Rr])$", msg.text)
+    if matches then
+        if matches[1]:lower() == 'testuser' then
+            found = true
+            local success = false
+            local this_user = 0
+            if msg.reply then
+                if msg.reply_to_message.forward then
+                    if msg.reply_to_message.forward_from then
+                        this_user = msg.reply_to_message.forward_from.id
+                        if sendChatAction(msg.reply_to_message.forward_from.id, 'typing') then
+                            success = true
+                        else
+                            success = false
+                        end
+                    else
+                        sendMessage(user.id, 'Can\'t do this to chat.')
+                    end
+                else
+                    sendMessage(user.id, 'No forward found.')
+                end
+            elseif matches[2] then
+                if string.match(matches[2], '^%d+$') then
+                    this_user = matches[2]
+                    if sendChatAction(matches[2], 'typing') then
+                        success = true
+                    else
+                        success = false
+                    end
+                elseif string.match(matches[2], '^[^%s]+$') then
+                    local obj_user = getChat('@' .. matches[2]:gsub('@', ''))
+                    if obj_user then
+                        if obj_user.type == 'private' or obj_user.type == 'user' then
+                            this_user = obj_user.id
+                            if sendChatAction(obj_user.id, 'typing') then
+                                success = true
+                            else
+                                success = false
+                            end
+                        end
+                    end
+                end
+            end
+            if success then
+                sendMessage(user.id, 'User ' .. this_user .. ' did not block.')
+            else
+                sendMessage(user.id, 'User ' .. this_user .. ' blocked the bot.')
+            end
+        end
+    end
+    local matches = match_pattern("^[#!/]([Pp][Mm]) (%d+) (.*)$", msg.text)
     if matches then
         if matches[1]:lower() == 'pm' then
             found = true
@@ -451,11 +477,24 @@ function check_command(msg)
             sendMessage(user.id, 'Text sent.')
         end
     end
-    local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])", msg.text)
+    local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])$", msg.text)
     if matches then
         if matches[1]:lower() == "update" then
             found = true
             sendMessage(user.id, io.popen('git pull'):read('*all'))
+        end
+    end
+    local matches = match_pattern("^[#!/]([Hh][Ee][Ll][Pp])$", msg.text)
+    if matches then
+        if matches[1]:lower() == "help" then
+            found = true
+            local help_text = '/help: The bot shows this help.\n' ..
+            '/update: The bot updates itself from github.\n' ..
+            '/pm <chat_id> <text>: The bot writes <text> to <chat_id>.\n' ..
+            '/testuser <id>|<username>|<reply_from>: The bot tests whether it has been blocked by the specified user or not.\n' ..
+            '/block <id>|<username>|<reply_from>: The bot "blocks" the specified user (you won\'t receive messages anymore from that user).\n' ..
+            '/unblock <id>|<username>|<reply_from>: The bot "unblocks" the specified user.'
+            sendMessage(user.id, help_text)
         end
     end
     return found
