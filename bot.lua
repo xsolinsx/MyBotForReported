@@ -27,7 +27,7 @@
   yellow = "\27[33m"
 ]]
 
--- insert master_id and bot_api_key
+-- insert master_id
 user = { }
 bot = { }
 master_id = 41400331
@@ -476,6 +476,21 @@ function check_command(msg)
             found = true
             sendMessage(matches[2], matches[3])
             sendMessage(user.id, 'Text sent.')
+        end
+    end
+    local matches = match_pattern("^[#!/]([Ll][Uu][Aa]) (.*)", msg.text)
+    if matches then
+        if matches[1]:lower() == "lua" and matches[2] then
+            found = true
+            local output = loadstring(matches[2])()
+            if not output then
+                output = 'Done, no output'
+            else
+                if type(output) == 'table' then
+                    output = vardumptext(output)
+                end
+            end
+            sendMessage(user.id, tostring(output))
         end
     end
     local matches = match_pattern("^[#!/]([Uu][Pp][Dd][Aa][Tt][Ee])", msg.text)
