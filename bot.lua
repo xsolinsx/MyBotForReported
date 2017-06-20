@@ -338,7 +338,6 @@ function match_pattern(pattern, text, lower_case)
 end
 
 function check_command(msg)
-    printvardump(msg)
     local found = false
     local matches = match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk]) ?(.*)", msg.text) or match_pattern("^[#!/]([Bb][Ll][Oo][Cc][Kk])", msg.text)
     if matches then
@@ -483,12 +482,12 @@ function check_command(msg)
         if matches[1]:lower() == "lua" and matches[2] then
             found = true
             local output = loadstring(matches[2])()
-            if not output then
-                output = 'Done, no output'
-            else
+            if output then
                 if type(output) == 'table' then
                     output = vardumptext(output)
                 end
+            else
+                output = 'Done, no output'
             end
             sendMessage(user.id, tostring(output))
         end
