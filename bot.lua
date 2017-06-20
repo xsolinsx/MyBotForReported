@@ -537,43 +537,48 @@ function on_msg_receive(msg)
     msg = pre_process_media_msg(msg)
     msg = adjust_msg(msg)
     if msg_valid(msg) then
-        if tonumber(msg.from.id) == tonumber(user.id) then
-            local command = check_command(msg)
-            print(command)
-            if not command then
-                if msg.reply_to_message then
-                    if msg.reply_to_message.forward_from then
-                        forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
-                        sendChatAction(msg.from.id, 'typing')
+        local res, err = pcall( function()
+            if tonumber(msg.from.id) == tonumber(user.id) then
+                local command = check_command(msg)
+                print(command)
+                if not command then
+                    if msg.reply_to_message then
+                        if msg.reply_to_message.forward_from then
+                            forwardMessage(msg.reply_to_message.forward_from.id, msg.from.id, msg.message_id)
+                            sendChatAction(msg.from.id, 'typing')
+                        else
+                            sendMessage(user.id, 'Need forward.')
+                        end
                     else
-                        sendMessage(user.id, 'Need forward.')
-                    end
-                else
-                    sendMessage(user.id, 'Need reply.')
-                end
-            end
-        else
-            if not check_flood(msg) then
-                forwardMessage(user.id, msg.from.id, msg.message_id)
-                if msg.media then
-                    if msg.media_type == 'sticker' then
-                        sendMessage(user.id, '↑ STICKER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
-                    end
-                end
-                if msg.forward then
-                    if msg.forward_from then
-                        if msg.forward_from.id ~= msg.from.id then
-                            sendMessage(user.id, '↑ FWD USER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
-                        end
-                    elseif msg.forward_from_chat then
-                        if msg.forward_from_chat.id ~= msg.from.id then
-                            sendMessage(user.id, '↑ FWD CHAT ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
-                        end
+                        sendMessage(user.id, 'Need reply.')
                     end
                 end
             else
-                -- flooder
+                if not check_flood(msg) then
+                    forwardMessage(user.id, msg.from.id, msg.message_id)
+                    if msg.media then
+                        if msg.media_type == 'sticker' then
+                            sendMessage(user.id, '↑ STICKER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
+                        end
+                    end
+                    if msg.forward then
+                        if msg.forward_from then
+                            if msg.forward_from.id ~= msg.from.id then
+                                sendMessage(user.id, '↑ FWD USER ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
+                            end
+                        elseif msg.forward_from_chat then
+                            if msg.forward_from_chat.id ~= msg.from.id then
+                                sendMessage(user.id, '↑ FWD CHAT ' .. msg.from.print_name .. ' (' .. msg.from.id .. ') ↑')
+                            end
+                        end
+                    end
+                else
+                    -- flooder
+                end
             end
+        end )
+        if not res then
+            sendMessage(user.id, 'An #error occurred.\n' .. err .. '\n' .. vardumptext(msg))
         end
     end
     print_msg(msg)
