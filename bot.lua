@@ -555,6 +555,9 @@ function on_msg_receive(msg)
                 end
             else
                 if not check_flood(msg) then
+                    if msg.text == '/start' then
+                        sendMessage(msg.from.id, 'Hi, use this bot to talk to ' ..(user.username or(user.first_name .. ' ' ..(user.last_name or ''))))
+                    end
                     forwardMessage(user.id, msg.from.id, msg.message_id)
                     if msg.media then
                         if msg.media_type == 'sticker' then
