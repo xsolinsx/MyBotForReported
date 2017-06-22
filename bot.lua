@@ -539,6 +539,8 @@ function on_msg_receive(msg)
     if msg_valid(msg) then
         local res, err = pcall( function()
             if tonumber(msg.from.id) == tonumber(user.id) then
+                -- update user data at every message received from him/her
+                user = msg.from
                 local command = check_command(msg)
                 print(command)
                 if not command then
@@ -556,7 +558,11 @@ function on_msg_receive(msg)
             else
                 if not check_flood(msg) then
                     if msg.text == '/start' then
-                        sendMessage(msg.from.id, 'Hi, use this bot to talk to ' ..(user.username or(user.first_name .. ' ' ..(user.last_name or ''))))
+                        local txtusr = user.first_name .. ' ' ..(user.last_name or '')
+                        if user.username then
+                            txtusr = '@' .. user.username
+                        end
+                        sendMessage(msg.from.id, 'Hi, use this bot to talk to ' .. txtusr)
                     end
                     forwardMessage(user.id, msg.from.id, msg.message_id)
                     if msg.media then
