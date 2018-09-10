@@ -153,9 +153,10 @@ function sendRequest(url)
             code = getCode(tab.description)
         end
 
-        print(clr.red .. code, tab.description .. clr.reset)
-        sendMessage(user.id, '#BadRequest\n' .. vardumptext(tab) .. '\n' .. code)
-
+        if code ~= 502 then
+            print(clr.red .. code, tab.description .. clr.reset)
+            sendMessage(user.id, '#BadRequest\n' .. vardumptext(tab) .. '\n' .. code)
+        end
         local retry_after
         if code == 429 then
             retry_after = tab.parameters.retry_after
